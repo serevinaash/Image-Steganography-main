@@ -50,7 +50,6 @@ This project demonstrates image steganography using the **Least Significant Bit 
 
 ## Deployment
 
-- [Frontend URL](https://image-steganography-py.vercel.app/)
 
 ## Future Enhancements
 
