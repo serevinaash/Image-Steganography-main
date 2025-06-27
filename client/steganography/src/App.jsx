@@ -31,7 +31,7 @@ function App() {
       <div className='text-center'>
         <h1 className='text-6xl p-10'>Image Steganography</h1>
         <h2>Upload an image that you would like to encode or decode</h2>
-        <h2>The steganography technique involved here is based on LSB Manipulation</h2>
+        <h2> The steganography technique used here is based on DCT domain manipulation, such as F5 or optimized DMCSS</h2>
       </div>
       <div>
         <div className='text-center pt-12'>
