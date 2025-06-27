@@ -3,7 +3,6 @@
 
 This project demonstrates image steganography using the **Least Significant Bit (LSB)** manipulation technique. The project is divided into two parts:
 
-- **Backend**: A FastAPI server for encoding and decoding images.
 - **Frontend**: A React-based client interface built with the Tailwind CSS framework.
 
 ## Features
@@ -12,24 +11,11 @@ This project demonstrates image steganography using the **Least Significant Bit 
 - Decode hidden messages from the encoded images.
 - Simple and clean interface to interact with the steganography features.
 
-## Tech Stack
-
-### Backend:
-- **Python**: Main programming language.
-- **FastAPI**: The backend framework for building APIs.
-- **Uvicorn**: ASGI server to run the FastAPI application.
-- **Pillow**: Python library for image processing.
-- **Python-Multipart**: To handle file uploads.
-- **Vercel**: Used for deploying the backend.
 
 ### Frontend:
 - **React**: JavaScript framework for building user interfaces.
 - **Tailwind CSS**: Utility-first CSS framework for styling.
 - **Vercel**: Deployed the frontend alongside the backend.
-
-## Unique Combination
-
-Traditionally, FastAPI is not often paired with React, but in this project, both the backend and frontend are seamlessly integrated and deployed using **Vercel**, which provides a smooth development and deployment experience.
 
 ## How It Works
 
@@ -64,9 +50,7 @@ Traditionally, FastAPI is not often paired with React, but in this project, both
 
 ## Deployment
 
-Both the backend and frontend are deployed using Vercel. Check out the deployed project here:
 - [Frontend URL](https://image-steganography-py.vercel.app/)
-- [Backend URL](https://stegserver-ebmc9j0kk-a8h1kms-projects.vercel.app)
 
 ## Future Enhancements
 
