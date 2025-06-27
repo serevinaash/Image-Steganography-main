@@ -1,72 +1,48 @@
 import React, { useState } from 'react';
 import Encode from './Encode';
-import Decode from './Decode';
 
 function App() {
-  const [drop, setDrop] = useState(false);
-  const [enc, setEnc] = useState(null);
-  const [dec, setDec] = useState(null);
-  const [dropMenuText, setDropMenuText] = useState("Select Mode");
+  const [started, setStarted] = useState(false);
 
-  const handleEncodeClick = () => {
-    setDropMenuText("Encode");
-    setDrop(false);
-    setEnc(true);
-    setDec(false);
-  };
-
-  const handleDecodeClick = () => {
-    setDropMenuText("Decode");
-    setDrop(false);
-    setEnc(false);
-    setDec(true);
-  };
-
-  const handleDropChange = () => {
-    setDrop(!drop);
+  const handleStart = () => {
+    setStarted(true);
   };
 
   return (
-    <div className="pt-64 App min-h-screen font-sans bg-gradient-to-b font-semibold bg-gray-900 text-white">
-      <div className='text-center'>
-        <h1 className='text-6xl p-10'>Image Steganography</h1>
-        <h2>Upload an image that you would like to encode or decode</h2>
-        <h2> The steganography technique used here is based on DCT domain manipulation, such as F5 or optimized DMCSS</h2>
+    <div className="pt-64 App min-h-screen font-sans bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white">
+      <div className="text-center">
+        <h1 className="text-6xl font-bold p-10">Image Steganography</h1>
+        <div className="mt-2">
+          <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+            Modified F5 / optimDMCSS
+          </span>
+        </div>
+        <h2 className="mt-6 text-lg">
+          Upload an image that you would like to hide or extract a message from.
+        </h2>
+        <h2 className="text-sm text-gray-300 italic mt-2">
+          This tool uses <span className="text-blue-400">DCT-based steganography</span> techniques: F5 and optimDMCSS.
+        </h2>
       </div>
-      <div>
-        <div className='text-center pt-12'>
+
+      <div className="text-center pt-12">
+        {!started && (
           <button
-            type="button"
-            className="inline-flex w-1/4 text-center justify-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-black transition-all"
-            aria-expanded={drop}
-            aria-haspopup="true"
-            onClick={handleDropChange}
+            onClick={handleStart}
+            className="bg-blue-700 hover:bg-blue-500 text-white font-semibold py-2 px-6 rounded-xl shadow-lg transition-all"
           >
-            {dropMenuText}
-            <svg className="-mr-1 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-            </svg>
+            Start
           </button>
-
-          {drop && (
-            <div className='flex flex-col transition-all' id='change'>
-              <ul className='flex flex-col transition-all items-center '>
-                <li onClick={handleEncodeClick} className='cursor-pointer  py-2 hover:border hover:border-white w-1/4 shadow-sm bg-black ease-linear duration-500 '>
-                  <button >Encode 🔒</button>
-                </li>
-                <li onClick={handleDecodeClick} className='cursor-pointer py-2 hover:border hover:border-white w-1/4 shadow-sm bg-black rounded-b-xl ease-linear hover:bg-gradient-to-br duration-500'>
-                  <button >Decode 🔓</button>
-                </li>
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div>
-          {enc && <Encode />}
-          {dec && <Decode />}
-        </div>
+        )}
       </div>
+
+      <div className="mt-8">
+        {started && <Encode />}
+      </div>
+
+      <footer className="mt-20 text-center text-xs text-gray-500 pb-10">
+        This project is developed as part of an academic assignment. It implements a modified DCT-domain steganography algorithm based on F5 and optimDMCSS methods.
+      </footer>
     </div>
   );
 }

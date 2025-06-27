@@ -1,170 +1,187 @@
 import React, { useState } from 'react';
 
 const Encode = () => {
-    const [image, setImage] = useState(null);
-    const [text, setText] = useState('');
-    const [encodedImage, setEncodedImage] = useState(null);
-    const [error, setError] = useState(null);
-    const [modal, setModal] = useState(false);
-    const [filename, setFilename] = useState('');
-    const [uploaded, setUploaded] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [showEncode, setShowEncode] = useState(true);
+  const [image, setImage] = useState(null);
+  const [text, setText] = useState('');
+  const [key, setKey] = useState('');
+  const [algorithm, setAlgorithm] = useState('F5');
+  const [useReedSolomon, setUseReedSolomon] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [encodedImage, setEncodedImage] = useState(null);
+  const [error, setError] = useState(null);
+  const [modal, setModal] = useState(false);
+  const [filename, setFilename] = useState('');
+  const [uploaded, setUploaded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showEncode, setShowEncode] = useState(true);
 
-    const handleImageChange = (image) => {
-        setError(null);
-        if (!image.name.match(/\.(bmp|png|gif)$/)) {
-            const error = "Wrong File Type! Choose a PNG or BMP file only";
-            setError(error);
-            setModal(true);
-            setLoading(false)
-            return;
-        }
+  const handleImageChange = (image) => {
+    setError(null);
+    if (!image.name.match(/\.(bmp|png|gif|jpg|jpeg)$/)) {
+      setError("Format tidak didukung! Gunakan PNG, BMP, atau JPG.");
+      setModal(true);
+      setLoading(false);
+      return;
+    }
+    if (image.size > 200000000) {
+      setError("Ukuran file terlalu besar! Maksimal 200MB.");
+      setLoading(false);
+      setModal(true);
+      return;
+    }
+    setImage(image);
+    setFilename(image.name);
+    setUploaded(true);
+    setError(null);
+  };
 
-        if (image.size > 5000000) {
-            const error = "File size over limit! Choose a file below 5MB";
-            setError(error);
-            setLoading(false)
-            setModal(true);
-            return;
-        }
+  const onClose = () => {
+    setModal(false);
+    setError(null);
+    setLoading(false);
+  };
 
-        setImage(image);
-        setFilename(image.name);
-        setUploaded(true);
-        setError(null);
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setShowEncode(false);
 
-    const handleTextChange = (e) => {
-        const inputText = e.target.value.trim();
-        if (inputText === "") {
-            const error = "Enter valid text!";
-            setError(error);
-            setModal(true);
-            return;
-        }
-        setText(inputText);
-    };
+    if (!image || !text || !key) {
+      setError("Lengkapi semua input!");
+      setModal(true);
+      setShowEncode(true);
+      return;
+    }
 
-    const onClose = () => {
-        setModal(false);
-        setError(null);
-        setLoading(false)
-    };
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('text', text);
+    formData.append('key', key);
+    formData.append('algorithm', algorithm);
+    formData.append('reedSolomon', useReedSolomon);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setShowEncode(false);
+    const response = await fetch('https://stegserver-ebmc9j0kk-a8h1kms-projects.vercel.app/encode-image', {
+      method: 'POST',
+      body: formData,
+    });
 
-        if (!image) {
-            const error = "Please choose an image file to encode!";
-            setError(error);
-            setLoading(false);
-            setModal(true);
-            setShowEncode(true);
-            return;
-        }
+    const data = await response.blob();
+    const imageUrl = URL.createObjectURL(data);
+    setEncodedImage(imageUrl);
+    setLoading(false);
+    setShowEncode(true);
+  };
 
-        if (text === '') {
-            const error = "Please enter text to encode!";
-            setShowEncode(true);
-            setError(error);
-            setLoading(false);
-            setModal(true);
-            return;
-        }
-        setLoading(true)
-        const formData = new FormData();
-        formData.append('image', image);
-        formData.append('text', text);
-        setEncodedImage(null);
+  return (
+    <div className="text-white bg-gray-900 min-h-screen py-10 px-6">
+      <h1 className="text-3xl font-bold mb-10">📷 Mode Embed: Sembunyikan Pesan ke dalam Gambar</h1>
 
-        const response = await fetch('https://stegserver-ebmc9j0kk-a8h1kms-projects.vercel.app/encode-image', {
-            method: 'POST',
-            body: formData,
-        });
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Kiri: Upload dan Opsi */}
+          <div>
+            <label className="block mb-2">Upload Gambar Asli (Cover)</label>
+            <label htmlFor="dropzone-file" className="block border-2 border-gray-700 border-dashed rounded-lg p-6 text-center bg-gray-800 cursor-pointer hover:bg-gray-700">
+              <p className="text-sm">Drag and drop file here</p>
+              <p className="text-xs text-gray-400">Limit 200MB per file • JPG, JPEG, PNG</p>
+              <input
+                id="dropzone-file"
+                type="file"
+                accept=".png,.bmp,.jpg,.jpeg"
+                onChange={(e) => handleImageChange(e.target.files[0])}
+                className="hidden"
+              />
+            </label>
+            {uploaded && <p className="text-xs mt-2">File: {filename}</p>}
 
-        const data = await response.blob();
-        const imageUrl = URL.createObjectURL(data);
-        setEncodedImage(imageUrl);
-        setLoading(false)
-        setShowEncode(true)
-    };
+            <div className="mt-6">
+              <label className="block mb-1">Pilih Algoritma Steganografi:</label>
+              <select
+                className="w-full bg-gray-800 p-2 rounded"
+                value={algorithm}
+                onChange={(e) => setAlgorithm(e.target.value)}
+              >
+                <option value="F5">F5</option>
+                <option value="optimDMCSS">optimDMCSS</option>
+              </select>
+            </div>
 
-    return (
-        <div>
-            <form action="" onSubmit={handleSubmit}>
-                <div className='flex flex-col justify-center items-center pb-7'>
-                    <div className="flex items-center justify-center w-2/4 pt-12">
-                        <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-200">
-                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                {uploaded && (
-                                    <div className='flex flex-col items-center'>
-                                        <div className='flex flex-col items-center justify-center'>
-                                            <svg className='' width="512px" height="60px" viewBox="-6.4 -6.4 76.80 76.80" xmlns="http://www.w3.org/2000/svg" fill="#6b6b6b" stroke="#6b6b6b" transform="rotate(0)matrix(1, 0, 0, 1, 0, 0)"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g fill-rule="evenodd" clip-rule="evenodd"> <path d="M5.125.042c-2.801 0-5.072 2.273-5.072 5.074v53.841c0 2.803 2.271 5.073 5.072 5.073h45.775c2.801 0 5.074-2.271 5.074-5.073v-38.604l-18.904-20.311h-31.945z" fill="#47d1ac"></path> <path d="M55.977 20.352v1h-12.799s-6.312-1.26-6.129-6.707c0 0 .208 5.707 6.004 5.707h12.924z" fill="#5bd2ac"></path> <path d="M37.074 0v14.561c0 1.656 1.104 5.791 6.104 5.791h12.799l-18.903-20.352z" opacity=".5" fill="#ffffff"></path> </g> <path d="M10.119 53.739v-20.904h20.906v20.904h-20.906zm18.799-18.843h-16.691v12.6h16.691v-12.6zm-9.583 8.384l3.909-5.256 1.207 2.123 1.395-.434.984 5.631h-13.082l3.496-3.32 2.091 1.256zm-3.856-3.64c-.91 0-1.649-.688-1.649-1.538 0-.849.739-1.538 1.649-1.538.912 0 1.65.689 1.65 1.538 0 .85-.738 1.538-1.65 1.538z" fill-rule="evenodd" clip-rule="evenodd" fill="#ffffff"></path> </g></svg>
-                                            <br />
-                                            <span className='text-black font-mono'>{filename}</span>
-                                        </div>
-                                    </div>
-                                )}
-                                {!uploaded && (
-                                    <div className='flex flex-col items-center'>
-                                        <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
-                                        </svg>
-                                        <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">PNG or BMP (MAX. 5MB)</p>
-                                    </div>
-                                )}
-                            </div>
-                            <input accept=".png,.bmp" onChange={(event) => { handleImageChange(event.target.files[0]) }} id="dropzone-file" type="file" className="hidden" />
-                        </label>
-                    </div>
+            <div className="mt-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="checkbox"
+                  className="form-checkbox text-blue-600"
+                  checked={useReedSolomon}
+                  onChange={(e) => setUseReedSolomon(e.target.checked)}
+                />
+                <span className="ml-2">Gunakan Reed-Solomon untuk koreksi kesalahan?</span>
+              </label>
+            </div>
+          </div>
 
-                    <div className='bg-black rounded-full my-8 p-10 text-center text-base font-semibold'>
-                        <label className='' htmlFor="text-to-encode">Text To Encode: </label>
-                        <input className='bg-black p-2 rounded-md' type="text" value={text} placeholder='Enter text to be encoded' onChange={handleTextChange} id="text-to-encode" />
-                    </div>
-                    {showEncode && (<div>
-                        <button className='bg-gray-600 hover:bg-gray-800 transition-all p-4 mx-72 border rounded-xl' type="submit">Encode</button>
-                    </div>)}
-                    {loading && <div>
-                        <svg className="animate-spin h-16 w-16" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor"
-                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                            </path>
-                        </svg>
-                    </div>}
-                </div>
-            </form>
+          {/* Kanan: Pesan dan Kunci */}
+          <div>
+            <label className="block mb-1">Pesan Rahasia:</label>
+            <textarea
+              className="w-full bg-gray-800 p-2 rounded h-32"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
 
-            {error && modal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-all">
-                    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-                        <h2 className="text-lg font-semibold mb-4">Error</h2>
-                        <p className="text-black mb-4">{error}</p>
-                        <button
-                            onClick={onClose}
-                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        >
-                            Close
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {encodedImage && (
-                <div className='flex flex-col justify-center items-center bg-black'>
-                    <h3 className='p-5 text-2xl font-semibold bg-black border rounded-lg border-black m-3 '>Encoded Image </h3>
-                    <img className='w-64 h-64 object-cover border rounded-lg' src={encodedImage} alt="Encoded" />
-                    <div className='p-6 pt-12 mb-16'>
-                        <a className="m-4 p-4 rounded-xl text-lg font-semibold text-white transition-all bg-blue-700 hover:bg-blue-500" href={encodedImage} download="encoded_image.png">Download Encoded Image</a>
-                    </div>
-                </div>
-            )}
+            <label className="block mt-4 mb-1">Kunci Rahasia (16, 24, atau 32 karakter):</label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                className="w-full bg-gray-800 p-2 rounded"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-2 text-sm text-white"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                👁️
+              </button>
+            </div>
+          </div>
         </div>
-    );
+
+        <div className="mt-10 text-center">
+          {showEncode && <button className="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded" type="submit">Sembunyikan Pesan</button>}
+        </div>
+
+        {loading && (
+          <div className="mt-6 text-center animate-spin text-2xl">⏳</div>
+        )}
+      </form>
+
+      {error && modal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h2 className="text-lg font-semibold mb-4">Error</h2>
+            <p className="text-black mb-4">{error}</p>
+            <button
+              onClick={onClose}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {encodedImage && (
+        <div className="mt-10 text-center">
+          <h3 className="text-lg font-semibold mb-4">Encoded Image</h3>
+          <img className="mx-auto w-64 h-64 object-cover rounded border" src={encodedImage} alt="Encoded" />
+          <a className="mt-4 inline-block bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded" href={encodedImage} download="encoded_image.png">
+            Download Encoded Image
+          </a>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Encode;
