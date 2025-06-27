@@ -47,7 +47,8 @@ const Decode = () => {
     formData.append('reedSolomon', reedSolomon);
 
     try {
-      const response = await fetch('https://your-backend/decode-image', {
+      const response = await fetch('https://petanihandal-stegano-f5-dmcss-api.hf.space/decode-image', {
+
         method: 'POST',
         body: formData,
       });
