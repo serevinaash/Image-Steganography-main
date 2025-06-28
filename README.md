@@ -24,17 +24,7 @@ This project demonstrates image steganography using the **f5** manipulation tech
 
 ## Setup Instructions
 
-### Backend
 
-1. Clone the repository.
-2. Install dependencies:
-   ```bash
-   pip install fastapi uvicorn pillow python-multipart
-   ```
-3. Run the server:
-   ```bash
-   uvicorn main:app --reload
-   ```
 
 ### Frontend
 
