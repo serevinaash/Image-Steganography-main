@@ -19,7 +19,7 @@ This project demonstrates image steganography using the **f5** manipulation tech
 
 ## How It Works
 
-1. **Encoding**: The user uploads an image and enters a message. The LSB technique embeds the message into the least significant bits of the image pixels, producing a steganographic image.
+1. **Encoding**: The user uploads an image and enters a message. The f5 technique embeds the message into the least significant bits of the image pixels, producing a steganographic image.
 2. **Decoding**: The user uploads the encoded image, and the application retrieves the hidden message from the image using the reverse LSB technique.
 
 ## Setup Instructions
@@ -39,7 +39,7 @@ This project demonstrates image steganography using the **f5** manipulation tech
    ```
 
 ## Deployment
-
+https://image-steganography-main.vercel.app/
 
 ## Future Enhancements
 
