@@ -1,7 +1,7 @@
 
 # Image Steganography Project
 
-This project demonstrates image steganography using the **Least Significant Bit (LSB)** manipulation technique. The project is divided into two parts:
+This project demonstrates image steganography using the **f5** manipulation technique. The project is divided into two parts:
 
 - **Frontend**: A React-based client interface built with the Tailwind CSS framework.
 
